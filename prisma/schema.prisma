@@ -1,0 +1,62 @@
+// This is your Prisma schema file
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modèle Admin pour la gestion backend
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Modèle Category pour classifier les produits
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// Modèle Product avec support promo et Cloudinary
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?  @db.Text
+  imageUrl      String   // URL Cloudinary
+  priceOriginal Float
+  isPromo       Boolean  @default(false)
+  pricePromo    Float?   // Optionnel, null si pas en promo
+  
+  // Relation avec Category
+  category      Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId    String
+  
+  // Métadonnées
+  isNew         Boolean  @default(false)
+  isBestSeller  Boolean  @default(false)
+  inStock       Boolean  @default(true)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([categoryId])
+}
+
+// Modèle NewsletterSubscriber pour les inscriptions
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+}
