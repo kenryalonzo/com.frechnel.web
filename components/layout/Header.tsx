@@ -92,7 +92,7 @@ export function Header() {
                             alt="Freshnel Shopping"
                             width={40}
                             height={40}
-                            className="object-contain"
+                            className="object-contain w-auto h-10"
                         />
                         <span className="text-2xl font-black tracking-tighter text-white">
                             FRECHNEL<span className="text-primary">.</span>
