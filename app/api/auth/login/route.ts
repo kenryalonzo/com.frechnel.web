@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import * as bcrypt from 'bcryptjs';
 import { SignJWT } from 'jose';
 
 const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 );
+
+// Fallback credentials if env vars are missing (Safety for initial dev)
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@frechnel.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'freshnel2025';
 
 export async function POST(request: NextRequest) {
     try {
@@ -20,22 +22,11 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Trouver l'admin
-        const admin = await prisma.admin.findUnique({
-            where: { email },
-        });
+        // Vérification via Variables d'Environnement (Plus robuste aux reset DB)
+        const isValidEmail = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+        const isValidPassword = password === ADMIN_PASSWORD;
 
-        if (!admin) {
-            return NextResponse.json(
-                { error: 'Identifiants invalides' },
-                { status: 401 }
-            );
-        }
-
-        // Vérifier le mot de passe
-        const isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
-
-        if (!isPasswordValid) {
+        if (!isValidEmail || !isValidPassword) {
             return NextResponse.json(
                 { error: 'Identifiants invalides' },
                 { status: 401 }
@@ -44,8 +35,8 @@ export async function POST(request: NextRequest) {
 
         // Générer JWT
         const token = await new SignJWT({
-            adminId: admin.id,
-            email: admin.email,
+            role: 'admin',
+            email: email,
         })
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
@@ -57,8 +48,7 @@ export async function POST(request: NextRequest) {
             success: true,
             token,
             admin: {
-                id: admin.id,
-                email: admin.email,
+                email: email,
             },
         });
     } catch (error) {
@@ -69,3 +59,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+
