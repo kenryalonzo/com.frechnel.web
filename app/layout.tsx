@@ -44,6 +44,11 @@ export const metadata: Metadata = {
     description: "La référence du streetwear à Yaoundé. Style, Qualité, Exclusivité.",
     images: ["/assets/frechel-hero.jpg"],
   },
+  verification: {
+    other: {
+      "msvalidate.01": "61F73B06ED20604822C716FBC306873E",
+    },
+  },
 
 };
 
