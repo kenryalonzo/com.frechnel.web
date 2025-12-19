@@ -29,20 +29,11 @@ export const metadata: Metadata = {
     title: "FRECHNEL SHOPPING | Streetwear Yaoundé",
     description: "La référence du streetwear à Yaoundé. Style, Qualité, Exclusivité.",
     siteName: "FRECHNEL SHOPPING",
-    images: [
-      {
-        url: "/assets/frechel-hero.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Frechnel Shopping Hero",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "FRECHNEL SHOPPING | Streetwear Yaoundé",
     description: "La référence du streetwear à Yaoundé. Style, Qualité, Exclusivité.",
-    images: ["/assets/frechel-hero.jpg"],
   },
   verification: {
     other: {
