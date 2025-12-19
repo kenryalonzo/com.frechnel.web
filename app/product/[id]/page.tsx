@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/shared/ProductCard";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MessageCircle, Truck, ShieldCheck } from "lucide-react";
+import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import prisma from "@/lib/prisma";
 
 // Force dynamic rendering to ensure fresh data
@@ -95,6 +96,17 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <Section className="container px-4 md:px-6">
+                {/* Breadcrumb */}
+                <div className="mb-8">
+                    <Breadcrumb
+                        items={[
+                            { label: "Shop", href: "/shop" },
+                            { label: product.category.name, href: `/shop?categoryId=${product.categoryId}` },
+                            { label: product.name }
+                        ]}
+                    />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
                     {/* Left: Image Gallery */}
                     <div className="relative aspect-square md:aspect-[4/5] rounded-2xl overflow-hidden bg-muted border border-white/10">
