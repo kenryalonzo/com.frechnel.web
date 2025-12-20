@@ -85,7 +85,7 @@ export function Header() {
                 </div>
 
                 {/* Logo */}
-                <div className="flex w-full justify-center md:w-auto md:justify-start">
+                <div className="flex flex-1 justify-center md:flex-none md:w-auto md:justify-start">
                     <Link href="/" className="flex items-center gap-2">
                         <Image
                             src="/assets/logo.png"

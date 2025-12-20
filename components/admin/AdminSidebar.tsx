@@ -21,7 +21,12 @@ const navigation = [
     { name: "Newsletter", href: "/admin/newsletter", icon: Mail },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+    className?: string; // Allow custom classes
+    onNavigate?: () => void; // Callback to close sheet on mobile
+}
+
+export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
 
@@ -32,7 +37,7 @@ export function AdminSidebar() {
     };
 
     return (
-        <div className="flex h-full w-64 flex-col fixed left-0 top-0 bg-black border-r border-white/10">
+        <div className={cn("flex h-full w-64 flex-col bg-black border-r border-white/10", className)}>
             {/* Logo */}
             <div className="flex h-16 items-center gap-3 px-6 border-b border-white/10">
                 <Image
@@ -58,6 +63,7 @@ export function AdminSidebar() {
                         <Link
                             key={item.name}
                             href={item.href}
+                            onClick={onNavigate}
                             className={cn(
                                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                                 isActive
