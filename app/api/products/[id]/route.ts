@@ -117,8 +117,8 @@ export async function PUT(
     if (variantsData !== null) {
       // Delete variants not in the new list
       const newIds = variantsData
-        .filter((v: any) => v.id)
-        .map((v: any) => v.id);
+        .filter((v: { id?: string }) => v.id)
+        .map((v: { id?: string }) => v.id);
       await prisma.productVariant.deleteMany({
         where: {
           productId: id,
@@ -169,7 +169,7 @@ export async function PUT(
         isNew,
         isBestSeller,
         inStock,
-        gender: gender as any,
+        gender: gender as "UNISEX" | "MEN" | "WOMEN",
         tags,
       },
       include: {

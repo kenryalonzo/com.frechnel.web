@@ -46,7 +46,7 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-3xl font-black text-white">Dashboard</h1>
         <p className="text-muted-foreground mt-1">
-          Vue d'ensemble de votre boutique
+          Vue d&apos;ensemble de votre boutique
         </p>
       </div>
 

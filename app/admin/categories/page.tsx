@@ -64,6 +64,7 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const extractFlat = (cats: Category[]): Category[] => {
@@ -139,8 +140,9 @@ export default function CategoriesPage() {
 
       toast.success("Catégorie supprimée");
       fetchCategories();
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors de la suppression");
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(e.message || "Erreur lors de la suppression");
     } finally {
       setDeleteDialogOpen(false);
       setCategoryToDelete(null);
@@ -158,7 +160,7 @@ export default function CategoriesPage() {
         : "/api/categories";
       const method = editingCategory ? "PUT" : "POST";
 
-      const payload: any = {
+      const payload: Record<string, string | number> = {
         name: formData.name,
         sortOrder: parseInt(formData.sortOrder.toString() || "0"),
       };
@@ -367,14 +369,14 @@ export default function CategoriesPage() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground mt-1.5">
-                Permet de créer l'arborescence du menu (ex: Vêtements {">"}{" "}
+                Permet de créer l&apos;arborescence du menu (ex: Vêtements {">"}{" "}
                 Hoodies)
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Ordre d'affichage</Label>
+                <Label>Ordre d&apos;affichage</Label>
                 <Input
                   type="number"
                   value={formData.sortOrder}

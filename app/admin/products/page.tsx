@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
@@ -77,7 +76,7 @@ export default function ProductsPage() {
       } else {
         setProducts([]);
       }
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors du chargement des produits");
     } finally {
       setLoading(false);
@@ -179,7 +178,7 @@ export default function ProductsPage() {
   const updateVariant = (
     index: number,
     field: keyof ProductVariant,
-    value: any,
+    value: unknown,
   ) => {
     const newVariants = [...variants];
     newVariants[index] = { ...newVariants[index], [field]: value };
@@ -212,8 +211,8 @@ export default function ProductsPage() {
           size: v.size || null,
           color: v.color || null,
           colorHex: v.colorHex || null,
-          stock: parseInt(v.stock as any) || 0,
-          priceAdjust: parseFloat(v.priceAdjust as any) || 0,
+          stock: parseInt(String(v.stock)) || 0,
+          priceAdjust: parseFloat(String(v.priceAdjust)) || 0,
           imageUrl: v.imageUrl || null,
         })),
       };
@@ -242,8 +241,9 @@ export default function ProductsPage() {
       );
       setDialogOpen(false);
       fetchProducts();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(e.message);
     } finally {
       setSubmitting(false);
     }
@@ -266,7 +266,7 @@ export default function ProductsPage() {
 
       toast.success("Produit supprimé");
       fetchProducts();
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors de la suppression");
     }
   }
@@ -389,7 +389,7 @@ export default function ProductsPage() {
                 {editingProduct ? "Modifier le produit" : "Nouveau produit"}
               </DialogTitle>
               <DialogDescription className="text-xs">
-                Configurez les détails principaux et gérez l'inventaire par
+                Configurez les détails principaux et gérez l&apos;inventaire par
                 taille/couleur
               </DialogDescription>
             </div>
@@ -655,7 +655,7 @@ export default function ProductsPage() {
                   {variants.length === 0 ? (
                     <div className="text-center py-10 border border-dashed border-white/10 rounded-lg">
                       <p className="text-muted-foreground text-sm">
-                        Le produit n'a aucune variante. <br />
+                        Le produit n&apos;a aucune variante. <br />
                         Ajoutez-en pour gérer les tailles et couleurs.
                       </p>
                     </div>

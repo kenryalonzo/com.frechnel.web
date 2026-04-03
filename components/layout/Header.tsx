@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, ShoppingBag, Search, X, ChevronDown } from "lucide-react";
+import { Menu, ShoppingBag, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,

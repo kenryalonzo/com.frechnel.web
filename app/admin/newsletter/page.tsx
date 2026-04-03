@@ -33,7 +33,7 @@ export default function NewsletterPage() {
         setSubscribers([]);
         console.warn("API did not return an array:", data);
       }
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors du chargement");
     } finally {
       setLoading(false);
@@ -134,7 +134,7 @@ export default function NewsletterPage() {
                   Email
                 </th>
                 <th className="text-left p-4 text-sm font-medium text-muted-foreground">
-                  Date d'inscription
+                  Date d&apos;inscription
                 </th>
               </tr>
             </thead>

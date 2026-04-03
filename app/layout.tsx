@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { DeliveryBanner } from "@/components/layout/DeliveryBanner";
 import { MouseGlow } from "@/components/ui/mouse-glow";
 import { Toaster } from "@/components/ui/sonner";
 

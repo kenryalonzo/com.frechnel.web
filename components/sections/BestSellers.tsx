@@ -10,13 +10,14 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ProductCard } from "@/components/shared/ProductCard";
+import { Product } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2, Flame } from "lucide-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef } from "react";
 
 export function BestSellers() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const plugin = useRef(Autoplay({ delay: 3500, stopOnInteraction: true }));
 

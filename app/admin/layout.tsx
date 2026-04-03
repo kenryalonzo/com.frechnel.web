@@ -26,9 +26,14 @@ export default function AdminLayout({
   useEffect(() => {
     // Si on est sur la page de login, pas besoin de vérifier l'auth
     if (pathname === "/admin/login") {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setIsLoading(false);
-      return;
     }
+  }, [pathname]);
+
+  // Check Auth State
+  useEffect(() => {
+    if (pathname === "/admin/login") return;
 
     // Vérifier si le token existe
     const token = localStorage.getItem("admin_token");
@@ -38,7 +43,9 @@ export default function AdminLayout({
       return;
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setIsAuthenticated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setIsLoading(false);
   }, [pathname, router]);
 

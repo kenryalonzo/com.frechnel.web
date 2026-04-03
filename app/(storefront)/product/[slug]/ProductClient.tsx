@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/ui/section";
@@ -18,7 +17,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Accordion,
   AccordionContent,
@@ -55,7 +54,7 @@ interface Product {
 
 export default function ProductClientPage({ slug }: { slug: string }) {
   const [product, setProduct] = useState<Product | null>(null);
-  const [similar, setSimilar] = useState<any[]>([]);
+  const [similar, setSimilar] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
   const [copied, setCopied] = useState(false);
@@ -76,20 +75,20 @@ export default function ProductClientPage({ slug }: { slug: string }) {
             setActiveImage(data.variants[0].imageUrl);
         }
         // Fetch similar
-        return fetch(`/api/products?categoryId=${data.categoryId}&limit=4`);
+        return fetch(`/api/products?categoryId=${data.category.id}&limit=4`);
       })
       .then((r) => r?.json())
       .then((sim) => {
         if (sim?.data)
           setSimilar(
             sim.data
-              .filter((p: any) => p.id !== product?.id || p.slug !== slug)
+              .filter((p: Product) => p.id !== product?.id && p.slug !== slug)
               .slice(0, 4),
           );
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, product?.id]);
 
   if (loading) {
     return (

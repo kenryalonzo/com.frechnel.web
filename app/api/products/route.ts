@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { ProductVariant } from "@/lib/types";
 import { slugify } from "@/lib/types";
 
 // GET - Liste tous les produits avec filtres avancés (public)
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "24");
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (categoryId) where.categoryId = categoryId;
     if (gender) where.gender = gender;
@@ -196,17 +197,17 @@ export async function POST(request: NextRequest) {
         isNew,
         isBestSeller,
         inStock,
-        gender: gender as any,
+        gender: gender as "UNISEX" | "MEN" | "WOMEN",
         tags,
         variants:
           variantsData.length > 0
             ? {
-                create: variantsData.map((v: any) => ({
+                create: variantsData.map((v: Partial<ProductVariant>) => ({
                   size: v.size || null,
                   color: v.color || null,
                   colorHex: v.colorHex || null,
-                  stock: parseInt(v.stock) || 0,
-                  priceAdjust: parseFloat(v.priceAdjust) || 0,
+                  stock: Number(v.stock) || 0,
+                  priceAdjust: Number(v.priceAdjust) || 0,
                   imageUrl: v.imageUrl || null,
                 })),
               }

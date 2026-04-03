@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Instagram, MessageCircle, Mail, MapPin } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  Instagram,
+  Facebook,
+  MessageCircle,
+} from "lucide-react";
 
 const TikTokIcon = () => (
   <svg

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Zap } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ProductVariant {

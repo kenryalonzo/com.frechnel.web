@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Section } from "@/components/ui/section";
 import { ProductCard } from "@/components/shared/ProductCard";
+import { Product } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -58,8 +59,8 @@ function FiltersPanel({
   onReset,
 }: {
   categories: Category[];
-  filters: any;
-  onChange: (key: string, val: any) => void;
+  filters: Record<string, string | boolean | undefined>;
+  onChange: (key: string, val: string | boolean | undefined) => void;
   onReset: () => void;
 }) {
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
@@ -122,7 +123,8 @@ function FiltersPanel({
                     onClick={() =>
                       setExpandedCats((prev) => {
                         const n = new Set(prev);
-                        n.has(cat.id) ? n.delete(cat.id) : n.add(cat.id);
+                        if (n.has(cat.id)) n.delete(cat.id);
+                        else n.add(cat.id);
                         return n;
                       })
                     }
@@ -208,7 +210,7 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [meta, setMeta] = useState({
@@ -258,8 +260,8 @@ function ShopContent() {
       const data = await res.json();
       setProducts(data.data || []);
       setMeta(data.meta || { total: 0, page: 1, limit: 12, totalPages: 1 });
-    } catch (error) {
-      console.error("Failed to fetch products", error);
+    } catch (error: unknown) {
+      console.error(error);
       setProducts([]);
     } finally {
       setLoading(false);
@@ -270,7 +272,10 @@ function ShopContent() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const handleFilterChange = (key: string, val: any) => {
+  const handleFilterChange = (
+    key: string,
+    val: string | boolean | undefined,
+  ) => {
     const newFilters = { ...filters, [key]: val };
     setFilters(newFilters);
     // Update URL
@@ -466,7 +471,7 @@ function ShopContent() {
                   Aucun article trouvé
                 </p>
                 <p className="text-sm">
-                  Essaie d'autres filtres ou{" "}
+                  Essaie d&apos;autres filtres ou{" "}
                   <button
                     onClick={handleReset}
                     className="text-primary hover:underline"

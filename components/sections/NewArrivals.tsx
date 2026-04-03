@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ProductCard } from "@/components/shared/ProductCard";
-import { Loader2, Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { Product } from "@/lib/types";
 
 export function NewArrivals() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export function NewArrivals() {
             <div className="flex items-center gap-2 text-primary mb-2">
               <Sparkles className="h-4 w-4" />
               <span className="text-sm font-bold uppercase tracking-widest">
-                Vient d'arriver
+                Vient d&apos;arriver
               </span>
             </div>
             <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white">

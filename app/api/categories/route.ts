@@ -62,9 +62,14 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(category, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating category:", error);
-    if (error.code === "P2002") {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2002"
+    ) {
       return NextResponse.json(
         { error: "Cette catégorie existe déjà" },
         { status: 400 },
@@ -90,7 +95,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "ID requis" }, { status: 400 });
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (name !== undefined) {
       updateData.name = name;
       updateData.slug = slugify(name);
@@ -111,7 +116,7 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json(category);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating category:", error);
     return NextResponse.json(
       { error: "Erreur lors de la modification" },
