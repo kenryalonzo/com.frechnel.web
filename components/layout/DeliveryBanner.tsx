@@ -1,30 +1,34 @@
 "use client";
 
-import { motion } from "framer-motion";
+const MESSAGES = [
+  "🇨🇲 Livraison rapide à Yaoundé en 24h",
+  "📦 Expédition DHL partout au Cameroun",
+  "✅ Paiement à la livraison disponible",
+  "🔥 Nouveaux articles chaque semaine",
+  "💯 Qualité vérifiée avant expédition",
+];
 
 export function DeliveryBanner() {
-    return (
-        <div className="bg-primary text-primary-foreground py-1 overflow-hidden relative z-50">
-            <div className="flex whitespace-nowrap">
-                <motion.div
-                    animate={{ x: [0, -1000] }}
-                    transition={{
-                        repeat: Infinity,
-                        duration: 20,
-                        ease: "linear",
-                    }}
-                    className="flex gap-8 text-xs font-bold uppercase tracking-widest"
-                >
-                    {[...Array(10)].map((_, i) => (
-                        <span key={i} className="flex items-center gap-8">
-                            <span>Livraison rapide sur Yaoundé 🇨🇲</span>
-                            <span>•</span>
-                            <span>Expédition DHL partout au Cameroun 📦</span>
-                            <span>•</span>
-                        </span>
-                    ))}
-                </motion.div>
-            </div>
+  // Duplicate for seamless infinite scroll
+  const allMessages = [...MESSAGES, ...MESSAGES];
+
+  return (
+    <div className="bg-primary text-primary-foreground py-1.5 overflow-hidden relative z-50">
+      <div className="flex">
+        <div
+          className="flex gap-12 whitespace-nowrap text-xs font-bold uppercase tracking-widest"
+          style={{
+            animation: "ticker 30s linear infinite",
+          }}
+        >
+          {allMessages.map((msg, i) => (
+            <span key={i} className="flex items-center gap-12">
+              <span>{msg}</span>
+              <span className="opacity-50">✦</span>
+            </span>
+          ))}
         </div>
-    );
+      </div>
+    </div>
+  );
 }

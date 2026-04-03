@@ -1,173 +1,233 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
-import { extractPublicId, deleteFromCloudinary } from '@/lib/cloudinary';
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
+import { extractPublicId, deleteFromCloudinary } from "@/lib/cloudinary";
 
-// GET - Détails d'un produit (public)
+// GET - Détails d'un produit par ID ou slug (public)
 export async function GET(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
-    const { id } = await params;
-    try {
-        const product = await prisma.product.findUnique({
-            where: { id },
-            include: {
-                category: true,
-            },
-        });
+  const { id } = await params;
+  try {
+    // Try by slug first, then by id
+    const product = await prisma.product.findFirst({
+      where: {
+        OR: [{ id }, { slug: id }],
+      },
+      include: {
+        category: {
+          include: { parent: true },
+        },
+        variants: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
 
-        if (!product) {
-            return NextResponse.json(
-                { error: 'Produit non trouvé' },
-                { status: 404 }
-            );
-        }
-
-        return NextResponse.json(product);
-    } catch (error) {
-        console.error('Error fetching product:', error);
-        return NextResponse.json(
-            { error: 'Erreur lors de la récupération' },
-            { status: 500 }
-        );
+    if (!product) {
+      return NextResponse.json(
+        { error: "Produit non trouvé" },
+        { status: 404 },
+      );
     }
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la récupération" },
+      { status: 500 },
+    );
+  }
 }
 
-// PUT - Modifier un produit (protégé)
+// PUT - Modifier un produit + synchroniser variantes (protégé)
 export async function PUT(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
-    const { id } = await params;
-    const auth = await requireAuth(request);
-    if (!auth.authenticated) return auth.error;
+  const { id } = await params;
+  const auth = await requireAuth(request);
+  if (!auth.authenticated) return auth.error;
 
-    try {
-        const formData = await request.formData();
+  try {
+    const formData = await request.formData();
 
-        const name = formData.get('name') as string;
-        const description = formData.get('description') as string;
-        const priceOriginal = parseFloat(formData.get('priceOriginal') as string);
-        const pricePromo = formData.get('pricePromo') ? parseFloat(formData.get('pricePromo') as string) : null;
-        const isPromo = formData.get('isPromo') === 'true';
-        const categoryId = formData.get('categoryId') as string;
-        const isNew = formData.get('isNew') === 'true';
-        const isBestSeller = formData.get('isBestSeller') === 'true';
-        const inStock = formData.get('inStock') !== 'false';
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const priceOriginal = parseFloat(formData.get("priceOriginal") as string);
+    const pricePromo = formData.get("pricePromo")
+      ? parseFloat(formData.get("pricePromo") as string)
+      : null;
+    const isPromo = formData.get("isPromo") === "true";
+    const categoryId = formData.get("categoryId") as string;
+    const isNew = formData.get("isNew") === "true";
+    const isBestSeller = formData.get("isBestSeller") === "true";
+    const inStock = formData.get("inStock") !== "false";
+    const gender = (formData.get("gender") as string) || "UNISEX";
+    const tagsRaw = formData.get("tags") as string | null;
+    const tags = tagsRaw
+      ? tagsRaw
+          .split(",")
+          .map((t) => t.trim().toLowerCase())
+          .filter(Boolean)
+      : [];
 
-        const imageFile = formData.get('image') as File | null;
-        const imageUrl = formData.get('imageUrl') as string | null;
+    const imageFile = formData.get("image") as File | null;
+    const imageUrl = formData.get("imageUrl") as string | null;
 
-        // Récupérer le produit existant
-        const existingProduct = await prisma.product.findUnique({
-            where: { id },
-        });
+    // Parse variants from FormData
+    const variantsRaw = formData.get("variants") as string | null;
+    const variantsData = variantsRaw ? JSON.parse(variantsRaw) : null;
 
-        if (!existingProduct) {
-            return NextResponse.json(
-                { error: 'Produit non trouvé' },
-                { status: 404 }
-            );
-        }
+    // Récupérer le produit existant
+    const existingProduct = await prisma.product.findUnique({
+      where: { id },
+      include: { variants: true },
+    });
 
-        let finalImageUrl = existingProduct.imageUrl;
-
-        // Si nouvelle image uploadée
-        if (imageFile) {
-            const { uploadToCloudinary } = await import('@/lib/cloudinary');
-
-            // Supprimer l'ancienne image de Cloudinary
-            const oldPublicId = extractPublicId(existingProduct.imageUrl);
-            if (oldPublicId) {
-                try {
-                    await deleteFromCloudinary(oldPublicId);
-                } catch (error) {
-                    console.error('Error deleting old image:', error);
-                }
-            }
-
-            // Upload nouvelle image
-            const uploadResult = await uploadToCloudinary(imageFile);
-            finalImageUrl = uploadResult.url;
-        } else if (imageUrl) {
-            // Si URL fournie
-            finalImageUrl = imageUrl;
-        }
-
-        const product = await prisma.product.update({
-            where: { id },
-            data: {
-                name,
-                description,
-                imageUrl: finalImageUrl,
-                priceOriginal,
-                pricePromo: isPromo ? pricePromo : null,
-                isPromo,
-                categoryId,
-                isNew,
-                isBestSeller,
-                inStock,
-            },
-            include: {
-                category: true,
-            },
-        });
-
-        return NextResponse.json(product);
-    } catch (error) {
-        console.error('Error updating product:', error);
-        return NextResponse.json(
-            { error: 'Erreur lors de la modification' },
-            { status: 500 }
-        );
+    if (!existingProduct) {
+      return NextResponse.json(
+        { error: "Produit non trouvé" },
+        { status: 404 },
+      );
     }
+
+    let finalImageUrl = existingProduct.imageUrl;
+
+    // Si nouvelle image uploadée
+    if (imageFile) {
+      const { uploadToCloudinary } = await import("@/lib/cloudinary");
+      const oldPublicId = extractPublicId(existingProduct.imageUrl);
+      if (oldPublicId) {
+        try {
+          await deleteFromCloudinary(oldPublicId);
+        } catch {
+          /* ignore */
+        }
+      }
+      const uploadResult = await uploadToCloudinary(imageFile);
+      finalImageUrl = uploadResult.url;
+    } else if (imageUrl) {
+      finalImageUrl = imageUrl;
+    }
+
+    // Synchronize variants if provided
+    if (variantsData !== null) {
+      // Delete variants not in the new list
+      const newIds = variantsData
+        .filter((v: any) => v.id)
+        .map((v: any) => v.id);
+      await prisma.productVariant.deleteMany({
+        where: {
+          productId: id,
+          id: { notIn: newIds },
+        },
+      });
+
+      // Upsert each variant
+      for (const v of variantsData) {
+        if (v.id) {
+          await prisma.productVariant.update({
+            where: { id: v.id },
+            data: {
+              size: v.size || null,
+              color: v.color || null,
+              colorHex: v.colorHex || null,
+              stock: parseInt(v.stock) || 0,
+              priceAdjust: parseFloat(v.priceAdjust) || 0,
+              imageUrl: v.imageUrl || null,
+            },
+          });
+        } else {
+          await prisma.productVariant.create({
+            data: {
+              productId: id,
+              size: v.size || null,
+              color: v.color || null,
+              colorHex: v.colorHex || null,
+              stock: parseInt(v.stock) || 0,
+              priceAdjust: parseFloat(v.priceAdjust) || 0,
+              imageUrl: v.imageUrl || null,
+            },
+          });
+        }
+      }
+    }
+
+    const product = await prisma.product.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        imageUrl: finalImageUrl,
+        priceOriginal,
+        pricePromo: isPromo ? pricePromo : null,
+        isPromo,
+        categoryId,
+        isNew,
+        isBestSeller,
+        inStock,
+        gender: gender as any,
+        tags,
+      },
+      include: {
+        category: true,
+        variants: { orderBy: { createdAt: "asc" } },
+      },
+    });
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la modification" },
+      { status: 500 },
+    );
+  }
 }
 
-// DELETE - Supprimer un produit + image Cloudinary (protégé)
+// DELETE - Supprimer un produit + image Cloudinary + variantes (protégé)
 export async function DELETE(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
-    const { id } = await params;
-    const auth = await requireAuth(request);
-    if (!auth.authenticated) return auth.error;
+  const { id } = await params;
+  const auth = await requireAuth(request);
+  if (!auth.authenticated) return auth.error;
 
-    try {
-        // Récupérer le produit
-        const product = await prisma.product.findUnique({
-            where: { id },
-        });
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
 
-        if (!product) {
-            return NextResponse.json(
-                { error: 'Produit non trouvé' },
-                { status: 404 }
-            );
-        }
-
-        // Supprimer l'image de Cloudinary
-        const publicId = extractPublicId(product.imageUrl);
-        if (publicId) {
-            try {
-                await deleteFromCloudinary(publicId);
-            } catch (error) {
-                console.error('Error deleting image from Cloudinary:', error);
-                // Continue même si la suppression Cloudinary échoue
-            }
-        }
-
-        // Supprimer le produit de la DB
-        await prisma.product.delete({
-            where: { id },
-        });
-
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Error deleting product:', error);
-        return NextResponse.json(
-            { error: 'Erreur lors de la suppression' },
-            { status: 500 }
-        );
+    if (!product) {
+      return NextResponse.json(
+        { error: "Produit non trouvé" },
+        { status: 404 },
+      );
     }
+
+    // Supprimer l'image de Cloudinary
+    const publicId = extractPublicId(product.imageUrl);
+    if (publicId) {
+      try {
+        await deleteFromCloudinary(publicId);
+      } catch {
+        /* ignore */
+      }
+    }
+
+    // Cascade delete handles variants
+    await prisma.product.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la suppression" },
+      { status: 500 },
+    );
+  }
 }

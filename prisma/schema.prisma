@@ -19,39 +19,84 @@ model Admin {
   updatedAt    DateTime @updatedAt
 }
 
-// Modèle Category pour classifier les produits
+// Modèle Category avec hiérarchie parent/enfant
 model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
+  id        String     @id @default(cuid())
+  name      String     @unique
+  slug      String     @unique
+  imageUrl  String?    // Image pour la grid homepage
+  sortOrder Int        @default(0)
+
+  // Hiérarchie : un parent peut avoir plusieurs enfants
+  parentId  String?
+  parent    Category?  @relation("CategoryToChildren", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Category[] @relation("CategoryToChildren")
+
   products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([parentId])
 }
 
-// Modèle Product avec support promo et Cloudinary
+// Genre du produit
+enum Gender {
+  MEN
+  WOMEN
+  UNISEX
+}
+
+// Modèle Product enrichi avec slug, tags, gender et variantes
 model Product {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String
-  description   String?  @db.Text
-  imageUrl      String   // URL Cloudinary
+  slug          String    @unique // URL SEO-friendly ex: "nike-air-force-1-blanc"
+  description   String?   @db.Text
+  imageUrl      String    // URL de l'image principale (Cloudinary)
   priceOriginal Float
-  isPromo       Boolean  @default(false)
-  pricePromo    Float?   // Optionnel, null si pas en promo
-  
-  // Relation avec Category
-  category      Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId    String
-  
+  isPromo       Boolean   @default(false)
+  pricePromo    Float?    // Optionnel, null si pas en promo
+
   // Métadonnées
-  isNew         Boolean  @default(false)
-  isBestSeller  Boolean  @default(false)
-  inStock       Boolean  @default(true)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  gender        Gender    @default(UNISEX)
+  tags          String[]  @default([]) // ex: ["oversize", "streetwear"]
+  isNew         Boolean   @default(false)
+  isBestSeller  Boolean   @default(false)
+  inStock       Boolean   @default(true)
+
+  // Relation avec Category
+  category      Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId    String
+
+  // Variantes (taille, couleur, stock)
+  variants      ProductVariant[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
   @@index([categoryId])
+  @@index([slug])
+  @@index([isNew])
+  @@index([isBestSeller])
+}
+
+// Modèle ProductVariant — une variante = une combinaison taille/couleur
+model ProductVariant {
+  id           String   @id @default(cuid())
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String
+
+  size         String?  // "S", "M", "L", "XL" ou "38", "39", "42"…
+  color        String?  // Nom ex: "Noir", "Blanc", "Rouge"
+  colorHex     String?  // Code hex ex: "#000000" pour l'affichage du swatch
+  stock        Int      @default(0)
+  priceAdjust  Float    @default(0) // Ajustement +/- par rapport au prix de base
+  imageUrl     String?  // Image spécifique à cette variante (optionnel)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([productId])
 }
 
 // Modèle NewsletterSubscriber pour les inscriptions
