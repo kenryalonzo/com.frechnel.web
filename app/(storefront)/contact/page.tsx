@@ -11,8 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
-import { MessageCircle, Mail, Phone, MapPin } from "lucide-react";
+import { MessageCircle, Mail, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -110,8 +109,6 @@ const CONTACT_METHODS = [
     shadow: "hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]",
   },
 ];
-
-const PARTNERS = ["DOFGERMANY Store", "NASHMOOD"];
 
 const FAQ_ITEMS = [
   {

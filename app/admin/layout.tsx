@@ -26,7 +26,7 @@ export default function AdminLayout({
   useEffect(() => {
     // Si on est sur la page de login, pas besoin de vérifier l'auth
     if (pathname === "/admin/login") {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(false);
     }
   }, [pathname]);
@@ -43,9 +43,8 @@ export default function AdminLayout({
       return;
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsAuthenticated(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     setIsLoading(false);
   }, [pathname, router]);
 

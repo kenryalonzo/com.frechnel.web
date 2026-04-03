@@ -14,7 +14,6 @@ import {
   Truck,
   ShieldCheck,
   ChevronRight,
-  Copy,
   Check,
 } from "lucide-react";
 import { motion } from "framer-motion";

@@ -90,7 +90,7 @@ export default function CategoriesPage() {
         setCategories([]);
         setFlatCategories([]);
       }
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors du chargement des catégories");
     } finally {
       setLoading(false);
@@ -183,7 +183,7 @@ export default function CategoriesPage() {
       );
       setDialogOpen(false);
       fetchCategories();
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors de la sauvegarde");
     } finally {
       setSubmitting(false);
