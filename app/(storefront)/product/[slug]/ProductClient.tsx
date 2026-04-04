@@ -124,7 +124,7 @@ export default function ProductClientPage({ slug }: { slug: string }) {
     ).values(),
   );
 
-  const productUrl = `https://frechnel-shopping.com/product/${product.slug}`;
+  const productUrl = `https://www.frechnel-shopping.com/product/${product.slug}`;
   const whatsappMsg = `Salut Frechnel 👋, je veux commander :\n*${product.name}*${selectedVariant?.size ? ` — Taille: ${selectedVariant.size}` : ""}${selectedVariant?.color ? ` — Couleur: ${selectedVariant.color}` : ""}\nPrix: ${finalPrice.toLocaleString()} FCFA\nLien : ${productUrl}`;
 
   const handleShare = async () => {

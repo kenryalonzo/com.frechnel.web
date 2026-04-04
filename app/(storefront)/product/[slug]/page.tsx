@@ -22,7 +22,7 @@ export async function generateMetadata({
     return { title: "Produit Introuvable | Frechnel Shopping" };
   }
 
-  const productUrl = `https://frechnel-shopping.com/product/${product.slug}`;
+  const productUrl = `https://www.frechnel-shopping.com/product/${product.slug}`;
 
   return {
     title: `${product.name} | Frechnel Shopping`,

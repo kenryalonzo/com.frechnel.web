@@ -10,7 +10,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://frechnel-shopping.com"),
+  metadataBase: new URL("https://www.frechnel-shopping.com"),
   title: {
     default: "FRECHNEL SHOPPING | Streetwear Yaoundé",
     template: "%s | FRECHNEL SHOPPING",
@@ -31,17 +31,26 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "https://frechnel-shopping.com",
+    url: "https://www.frechnel-shopping.com",
     title: "FRECHNEL SHOPPING | Streetwear Yaoundé",
     description:
       "La référence du streetwear à Yaoundé. Style, Qualité, Exclusivité.",
     siteName: "FRECHNEL SHOPPING",
+    images: [
+      {
+        url: "/assets/frechel-hero.jpg",
+        width: 1200,
+        height: 630,
+        alt: "FRECHNEL SHOPPING - Streetwear à Yaoundé",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "FRECHNEL SHOPPING | Streetwear Yaoundé",
     description:
       "La référence du streetwear à Yaoundé. Style, Qualité, Exclusivité.",
+    images: ["/assets/frechel-hero.jpg"],
   },
   verification: {
     other: {

@@ -60,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
     : [];
 
   const isOutOfStock = product.inStock === false;
-  const whatsappMsg = `Salut Frechnel 👋, je veux commander :\n*${product.name}* — ${price.toLocaleString()} FCFA\nLien : https://frechnel-shopping.com/product/${product.slug || product.id}`;
+  const whatsappMsg = `Salut Frechnel 👋, je veux commander :\n*${product.name}* — ${price.toLocaleString()} FCFA\nLien : https://www.frechnel-shopping.com/product/${product.slug || product.id}`;
 
   return (
     <motion.article
