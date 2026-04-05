@@ -8,14 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/ui/section";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { ProductCard } from "@/components/shared/ProductCard";
-import {
-  MessageCircle,
-  Share2,
-  Truck,
-  ShieldCheck,
-  ChevronRight,
-  Check,
-} from "lucide-react";
+import { MessageCircle, Share2, Truck, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Accordion,

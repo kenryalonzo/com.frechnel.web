@@ -320,7 +320,7 @@ function ShopContent() {
 
   return (
     <div className="min-h-screen pt-12 pb-20">
-      <Section className="container px-4 md:px-6 !py-0">
+      <Section className="container px-4 md:px-6 py-0!">
         {/* Page header */}
         <div className="mb-10">
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-2">
@@ -388,7 +388,7 @@ function ShopContent() {
 
         <div className="flex gap-8">
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
+          <aside className="hidden lg:block w-64 shrink-0">
             <div className="sticky top-24 bg-card border border-white/8 rounded-2xl p-5">
               <p className="text-xs font-bold text-white uppercase tracking-wider mb-5">
                 Filtres
