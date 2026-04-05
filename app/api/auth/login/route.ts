@@ -5,9 +5,8 @@ const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 );
 
-// Fallback credentials if env vars are missing (Safety for initial dev)
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@frechnel.com';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'freshnel2025';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'freshnel2025';
 
 export async function POST(request: NextRequest) {
     try {
@@ -33,10 +32,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Générer JWT
+        const emailNorm = email.toLowerCase().trim();
+
+        // Générer JWT (adminId aligné avec lib/auth verifyAuth)
         const token = await new SignJWT({
             role: 'admin',
-            email: email,
+            adminId: emailNorm,
+            email: emailNorm,
         })
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
@@ -48,7 +50,7 @@ export async function POST(request: NextRequest) {
             success: true,
             token,
             admin: {
-                email: email,
+                email: emailNorm,
             },
         });
     } catch (error) {

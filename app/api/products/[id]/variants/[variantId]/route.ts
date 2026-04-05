@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { removeStoredImage } from "@/lib/media-cleanup";
 
 // PUT - Modifier une variante (protégé)
 export async function PUT(
@@ -15,6 +16,15 @@ export async function PUT(
     const body = await request.json();
     const { size, color, colorHex, stock, priceAdjust, imageUrl } = body;
 
+    const prev = await prisma.productVariant.findUnique({
+      where: { id: variantId },
+      select: { imageUrl: true },
+    });
+    const nextUrl = imageUrl || null;
+    if (prev?.imageUrl && nextUrl !== prev.imageUrl) {
+      await removeStoredImage(prev.imageUrl);
+    }
+
     const variant = await prisma.productVariant.update({
       where: { id: variantId },
       data: {
@@ -23,7 +33,7 @@ export async function PUT(
         colorHex: colorHex || null,
         stock: parseInt(stock) || 0,
         priceAdjust: parseFloat(priceAdjust) || 0,
-        imageUrl: imageUrl || null,
+        imageUrl: nextUrl,
       },
     });
 
@@ -47,6 +57,13 @@ export async function DELETE(
   if (!auth.authenticated) return auth.error;
 
   try {
+    const existing = await prisma.productVariant.findUnique({
+      where: { id: variantId },
+      select: { imageUrl: true },
+    });
+    if (existing?.imageUrl) {
+      await removeStoredImage(existing.imageUrl);
+    }
     await prisma.productVariant.delete({
       where: { id: variantId },
     });

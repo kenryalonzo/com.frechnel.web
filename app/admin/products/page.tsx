@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Product, Category, ProductVariant } from "@/lib/types";
+import { getAdminAuthHeaders } from "@/lib/admin-api";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -207,6 +208,7 @@ export default function ProductsPage() {
               .filter(Boolean)
           : [],
         variants: variants.map((v) => ({
+          ...(v.id ? { id: v.id } : {}),
           size: v.size || null,
           color: v.color || null,
           colorHex: v.colorHex || null,
@@ -448,6 +450,7 @@ export default function ProductsPage() {
                             try {
                               const res = await fetch("/api/upload", {
                                 method: "POST",
+                                headers: getAdminAuthHeaders(),
                                 body: data,
                               });
                               if (!res.ok) throw new Error();
@@ -748,6 +751,7 @@ export default function ProductsPage() {
                                 try {
                                   const res = await fetch("/api/upload", {
                                     method: "POST",
+                                    headers: getAdminAuthHeaders(),
                                     body: data,
                                   });
                                   if (!res.ok) throw new Error();

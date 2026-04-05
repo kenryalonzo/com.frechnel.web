@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, FolderTree, Mail, TrendingUp } from "lucide-react";
+import { getAdminAuthHeaders } from "@/lib/admin-api";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -14,10 +15,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchStats() {
       try {
+        const auth = getAdminAuthHeaders();
         const [productsRes, categoriesRes, newsletterRes] = await Promise.all([
           fetch("/api/products?limit=1"), // Just need the meta.total
           fetch("/api/categories"),
-          fetch("/api/newsletter"),
+          fetch("/api/newsletter", { headers: auth }),
         ]);
 
         const products = await productsRes.json();
@@ -31,7 +33,10 @@ export default function AdminDashboard() {
             products.length ||
             0,
           categories: categories.length || 0,
-          newsletter: newsletter.length || 0,
+          newsletter:
+            newsletterRes.ok && Array.isArray(newsletter)
+              ? newsletter.length
+              : 0,
         });
       } catch (error) {
         console.error("Error fetching stats:", error);

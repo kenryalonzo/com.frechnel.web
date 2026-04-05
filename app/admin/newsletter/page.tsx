@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
+import { getAdminAuthHeaders } from "@/lib/admin-api";
 
 interface Subscriber {
   id: string;
@@ -25,7 +26,9 @@ export default function NewsletterPage() {
 
   async function fetchSubscribers() {
     try {
-      const res = await fetch("/api/newsletter");
+      const res = await fetch("/api/newsletter", {
+        headers: getAdminAuthHeaders(),
+      });
       const data = await res.json();
       if (Array.isArray(data)) {
         setSubscribers(data);

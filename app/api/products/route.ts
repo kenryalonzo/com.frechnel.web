@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { ProductVariant } from "@/lib/types";
 import { slugify } from "@/lib/types";
+import { parseProductMutationBody } from "@/lib/product-mutation";
 
 // GET - Liste tous les produits avec filtres avancés (public)
 export async function GET(request: NextRequest) {
@@ -117,48 +118,38 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Créer un produit avec upload Cloudinary (protégé)
+// POST — Créer un produit (JSON admin ou FormData ; image fichier → Cloudinary, sinon URL)
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request);
   if (!auth.authenticated) return auth.error;
 
   try {
-    const formData = await request.formData();
+    const parsed = await parseProductMutationBody(request, "create");
+    const {
+      name,
+      description,
+      priceOriginal,
+      pricePromo,
+      isPromo,
+      categoryId,
+      isNew,
+      isBestSeller,
+      inStock,
+      gender,
+      tags,
+      imageFile,
+      imageUrl,
+      variants,
+    } = parsed;
 
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const priceOriginal = parseFloat(formData.get("priceOriginal") as string);
-    const pricePromo = formData.get("pricePromo")
-      ? parseFloat(formData.get("pricePromo") as string)
-      : null;
-    const isPromo = formData.get("isPromo") === "true";
-    const categoryId = formData.get("categoryId") as string;
-    const isNew = formData.get("isNew") === "true";
-    const isBestSeller = formData.get("isBestSeller") === "true";
-    const inStock = formData.get("inStock") !== "false";
-    const gender = (formData.get("gender") as string) || "UNISEX";
-    const tagsRaw = formData.get("tags") as string | null;
-    const tags = tagsRaw
-      ? tagsRaw
-          .split(",")
-          .map((t) => t.trim().toLowerCase())
-          .filter(Boolean)
-      : [];
-
-    const imageFile = formData.get("image") as File | null;
-    const imageUrl = formData.get("imageUrl") as string | null;
-
-    // Validation
-    if (!name || !priceOriginal || !categoryId) {
+    if (!name?.trim() || !Number.isFinite(priceOriginal) || !categoryId) {
       return NextResponse.json(
         { error: "Nom, prix et catégorie requis" },
         { status: 400 },
       );
     }
 
-    // Auto-generate slug
     let slug = slugify(name);
-    // Ensure uniqueness by appending random suffix if needed
     const existing = await prisma.product.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now()}`;
@@ -166,7 +157,6 @@ export async function POST(request: NextRequest) {
 
     let finalImageUrl = imageUrl;
 
-    // Upload vers Cloudinary si un fichier est fourni
     if (imageFile) {
       const { uploadToCloudinary } = await import("@/lib/cloudinary");
       const uploadResult = await uploadToCloudinary(imageFile);
@@ -180,9 +170,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse variants from FormData
-    const variantsRaw = formData.get("variants") as string | null;
-    const variantsData = variantsRaw ? JSON.parse(variantsRaw) : [];
+    const variantsData = variants ?? [];
 
     const product = await prisma.product.create({
       data: {

@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
 
-// GET - Liste des abonnés (public pour affichage, peut être protégé)
-export async function GET() {
+// GET — Liste des abonnés (admin uniquement)
+export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (!auth.authenticated) return auth.error;
+
   try {
     const subscribers = await prisma.newsletterSubscriber.findMany({
       orderBy: {

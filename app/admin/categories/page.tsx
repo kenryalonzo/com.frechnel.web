@@ -41,6 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Category } from "@/lib/types";
+import { getAdminAuthHeaders } from "@/lib/admin-api";
 
 export default function CategoriesPage() {
   // API returns the hierarchical tree (categories map to children natively via Prisma include)
@@ -417,6 +418,7 @@ export default function CategoriesPage() {
                       try {
                         const res = await fetch("/api/upload", {
                           method: "POST",
+                          headers: getAdminAuthHeaders(),
                           body: data,
                         });
                         if (!res.ok) throw new Error();
