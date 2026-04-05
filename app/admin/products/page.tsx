@@ -466,7 +466,7 @@ export default function ProductsPage() {
                           className="bg-white/5 border-white/10 h-9 text-sm"
                         />
                         <Input
-                          type="url"
+                          type="text"
                           value={formData.imageUrl}
                           onChange={(e) =>
                             setFormData({
@@ -475,7 +475,7 @@ export default function ProductsPage() {
                             })
                           }
                           className="bg-white/5 border-white/10 h-9 text-sm"
-                          placeholder="Ou lien URL (obligatoire si aucun upload)"
+                          placeholder="Ou lien URL (rempli automatiquement après upload)"
                           required={!formData.imageUrl}
                         />
                       </div>

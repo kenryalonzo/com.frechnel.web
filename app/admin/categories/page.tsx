@@ -434,13 +434,13 @@ export default function CategoriesPage() {
                     className="bg-white/5 border-white/10"
                   />
                   <Input
-                    type="url"
+                    type="text"
                     value={formData.imageUrl}
                     onChange={(e) =>
                       setFormData({ ...formData, imageUrl: e.target.value })
                     }
                     className="bg-white/5 border-white/10"
-                    placeholder="Ou lien de l'image (https://...)"
+                    placeholder="Ou lien de l'image (rempli automatiquement)"
                   />
                 </div>
               </div>

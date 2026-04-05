@@ -149,10 +149,13 @@ export default function ProductClientPage({ slug }: { slug: string }) {
   const variantStock = selectedVariant?.stock ?? (product.inStock ? 99 : 0);
 
   return (
-    <div className="min-h-screen pt-20 pb-20">
-      <Section className="container px-4 md:px-6">
-        {/* Breadcrumb */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-[#0a0a0a] pt-4 pb-20 overflow-x-hidden">
+      {/* Dynamic Background Glow */}
+      <div className="fixed top-0 left-1/4 w-[500px] h-[400px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none" />
+
+      <Section className="container px-4 md:px-6 relative pt-4 md:pt-6 pb-16 md:pb-24">
+        {/* Breadcrumb - Compact */}
+        <div className="mb-4 opacity-40 hover:opacity-100 transition-opacity">
           <Breadcrumb
             items={[
               { label: "Shop", href: "/shop" },
@@ -165,299 +168,311 @@ export default function ProductClientPage({ slug }: { slug: string }) {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 mb-20">
-          {/* Left: Image */}
-          <div>
-            <motion.div
-              key={activeImage}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="relative aspect-square md:aspect-4/5 rounded-2xl overflow-hidden bg-muted border border-white/10"
-            >
-              <Image
-                src={activeImage}
-                alt={product.name}
-                fill
-                className="object-cover"
-                priority
-              />
-              {product.isPromo && (
-                <Badge className="absolute top-4 left-4 bg-primary text-white font-bold shadow-[0_0_15px_rgba(239,68,68,0.6)]">
-                  -{discount}%
-                </Badge>
-              )}
-              {product.isNew && (
-                <Badge className="absolute top-4 right-4 bg-white text-black font-bold">
-                  NOUVEAU
-                </Badge>
-              )}
-            </motion.div>
-
-            {/* Variant image thumbnails */}
-            {product.variants.filter((v) => v.imageUrl).length > 0 && (
-              <div className="flex gap-2 mt-3 overflow-x-auto">
-                <button
-                  onClick={() => setActiveImage(product.imageUrl)}
-                  className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${activeImage === product.imageUrl ? "border-primary" : "border-white/10"}`}
-                >
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* LEFT: IMAGE SECTION */}
+          <div className="lg:col-span-5 xl:col-span-4">
+            <div className="sticky top-24 space-y-4">
+              <motion.div
+                key={activeImage}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="relative group lg:max-h-[48vh]"
+              >
+                {/* Image Showcase - Refined Border & Shadow */}
+                <div className="relative aspect-4/5 w-full rounded-xl overflow-hidden border border-white/5 bg-white/2 shadow-2xl transition-all duration-500">
                   <Image
-                    src={product.imageUrl}
-                    alt="Principal"
-                    width={64}
-                    height={64}
-                    className="object-cover w-full h-full"
+                    src={activeImage}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-700"
+                    priority
                   />
-                </button>
-                {product.variants
-                  .filter((v) => v.imageUrl)
-                  .map((v) => (
-                    <button
-                      key={v.id}
-                      onClick={() => handleVariantSelect(v)}
-                      className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${activeImage === v.imageUrl ? "border-primary" : "border-white/10"}`}
-                    >
-                      <Image
-                        src={v.imageUrl!}
-                        alt={v.color || ""}
-                        width={64}
-                        height={64}
-                        className="object-cover w-full h-full"
-                      />
-                    </button>
-                  ))}
-              </div>
-            )}
+
+                  {/* Subtle Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-40" />
+
+                  {/* Badges - Minimalist */}
+                  <div className="absolute top-4 left-4 flex flex-col gap-1.5">
+                    {product.isPromo && (
+                      <Badge className="bg-primary text-white font-black px-2.5 py-1 text-xs tracking-tighter border-none">
+                        -{discount}%
+                      </Badge>
+                    )}
+                    {product.isNew && (
+                      <Badge className="bg-white text-black font-black px-2.5 py-1 text-[10px] tracking-tighter border-none">
+                        NEW DROP
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Thumbnails - Smaller */}
+              {product.variants.filter((v) => v.imageUrl).length > 0 && (
+                <div className="flex gap-2 px-1 pb-2 overflow-x-auto scrollbar-hide">
+                  <button
+                    onClick={() => setActiveImage(product.imageUrl)}
+                    className={`relative shrink-0 w-14 h-16 rounded-md overflow-hidden border transition-all duration-300 ${activeImage === product.imageUrl ? "border-primary scale-105" : "border-white/10 opacity-40 hover:opacity-80"}`}
+                  >
+                    <Image
+                      src={product.imageUrl}
+                      alt="Principal"
+                      fill
+                      className="object-cover"
+                    />
+                  </button>
+                  {product.variants
+                    .filter((v) => v.imageUrl)
+                    .map((v) => (
+                      <button
+                        key={v.id}
+                        onClick={() => handleVariantSelect(v)}
+                        className={`relative shrink-0 w-14 h-16 rounded-md overflow-hidden border transition-all duration-300 ${activeImage === v.imageUrl ? "border-primary scale-105" : "border-white/10 opacity-40 hover:opacity-80"}`}
+                      >
+                        <Image
+                          src={v.imageUrl!}
+                          alt={v.color || ""}
+                          fill
+                          className="object-cover"
+                        />
+                      </button>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Right: Details */}
-          <div className="flex flex-col gap-6">
-            {/* Category + Badges */}
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/shop?categoryId=${product.category.id}`}
-                className="text-sm text-muted-foreground uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1"
-              >
-                {product.category.name} <ChevronRight className="h-3 w-3" />
-              </Link>
-              {product.gender !== "UNISEX" && (
-                <Badge
-                  variant="outline"
-                  className="border-white/20 text-white/50 text-xs"
-                >
-                  {product.gender === "MEN" ? "Homme" : "Femme"}
-                </Badge>
-              )}
-            </div>
-
-            {/* Title */}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-white leading-tight">
-              {product.name}
-            </h1>
-
-            {/* Price */}
-            <div className="flex items-center gap-4">
-              <span
-                className={`text-3xl font-black ${product.isPromo ? "text-primary" : "text-white"}`}
-              >
-                {finalPrice.toLocaleString()} FCFA
-              </span>
-              {product.isPromo && product.pricePromo && (
-                <>
-                  <span className="text-xl text-muted-foreground line-through">
-                    {product.priceOriginal.toLocaleString()} FCFA
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="border-primary text-primary"
+          {/* RIGHT: DETAILS SECTION */}
+          <div className="lg:col-span-7 xl:col-span-8 flex flex-col pt-2">
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="space-y-6"
+            >
+              {/* Header Info */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={`/shop?categoryId=${product.category.id}`}
+                    className="text-[10px] font-black tracking-widest text-primary hover:text-white transition-colors uppercase"
                   >
-                    -{discount}%
-                  </Badge>
-                </>
-              )}
-            </div>
+                    {product.category.name}
+                  </Link>
+                  <span className="h-0.5 w-0.5 rounded-full bg-white/20" />
+                  <span className="text-[10px] font-medium text-white/30 tracking-widest uppercase">
+                    {product.gender === "MEN"
+                      ? "HOMME"
+                      : product.gender === "WOMEN"
+                        ? "FEMME"
+                        : "UNISEX"}
+                  </span>
+                </div>
 
-            {/* Stock indicator */}
-            {selectedVariant && (
-              <div
-                className={`text-sm font-medium flex items-center gap-2 ${variantStock > 5 ? "text-emerald-400" : variantStock > 0 ? "text-yellow-400" : "text-red-400"}`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full ${variantStock > 5 ? "bg-emerald-400" : variantStock > 0 ? "bg-yellow-400" : "bg-red-400"}`}
-                />
-                {variantStock > 5
-                  ? "En stock"
-                  : variantStock > 0
-                    ? `Plus que ${variantStock} restant${variantStock > 1 ? "s" : ""}`
-                    : "Rupture de stock"}
+                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white leading-none">
+                  {product.name}
+                </h1>
               </div>
-            )}
 
-            {/* Variant selectors */}
-            {colors.length > 0 && (
-              <div>
-                <p className="text-xs font-bold text-white/60 uppercase tracking-wider mb-3">
-                  Couleur :{" "}
-                  {selectedVariant?.color && (
-                    <span className="text-white normal-case font-normal">
-                      {selectedVariant.color}
+              {/* Price & Status */}
+              <div className="flex flex-wrap items-center gap-4 pt-4 pb-6 border-b border-white/5">
+                <div className="flex items-baseline gap-3">
+                  <span
+                    className={`text-3xl md:text-4xl font-black ${product.isPromo ? "text-primary" : "text-white"}`}
+                  >
+                    {finalPrice.toLocaleString()}{" "}
+                    <span className="text-xl opacity-60">FCFA</span>
+                  </span>
+                  {product.isPromo && product.priceOriginal && (
+                    <span className="text-sm text-white/20 line-through font-medium">
+                      {product.priceOriginal.toLocaleString()} FCFA
                     </span>
                   )}
-                </p>
-                <div className="flex gap-2">
-                  {colors.map((v) => (
-                    <button
-                      key={v.id}
-                      onClick={() => handleVariantSelect(v)}
-                      title={v.color!}
-                      className={`h-8 w-8 rounded-full border-2 transition-all hover:scale-110 ${selectedVariant?.colorHex === v.colorHex ? "border-primary scale-110 shadow-lg" : "border-white/20"}`}
-                      style={{ backgroundColor: v.colorHex! }}
-                    />
-                  ))}
                 </div>
-              </div>
-            )}
 
-            {sizes.length > 0 && (
-              <div>
-                <p className="text-xs font-bold text-white/60 uppercase tracking-wider mb-3">
-                  Taille
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {sizes.map((size) => {
-                    const variant = product.variants.find(
-                      (v) =>
-                        v.size === size &&
-                        (!selectedVariant?.colorHex ||
-                          v.colorHex === selectedVariant.colorHex),
-                    );
-                    const outOfStock = variant?.stock === 0;
-                    return (
-                      <button
-                        key={size}
-                        onClick={() =>
-                          variant && !outOfStock && setSelectedVariant(variant)
-                        }
-                        disabled={outOfStock}
-                        className={`px-4 py-2 rounded-lg border text-sm font-semibold transition-all ${
-                          selectedVariant?.size === size
-                            ? "bg-primary border-primary text-white"
-                            : outOfStock
-                              ? "border-white/5 text-white/20 line-through cursor-not-allowed"
-                              : "border-white/15 text-white/80 hover:border-primary hover:text-white"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Description */}
-            {product.description && (
-              <p className="text-muted-foreground leading-relaxed">
-                {product.description}
-              </p>
-            )}
-
-            {/* Tags */}
-            {product.tags?.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {product.tags.map((tag) => (
-                  <Link
-                    key={tag}
-                    href={`/shop?tag=${tag}`}
-                    className="text-xs bg-white/5 border border-white/10 rounded-full px-2.5 py-1 text-white/50 hover:text-primary hover:border-primary/40 transition-colors"
-                  >
-                    #{tag}
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {/* CTAs */}
-            <div className="flex flex-col gap-3">
-              <Button
-                size="lg"
-                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold text-base py-6 rounded-xl transition-all duration-300"
-                style={{ boxShadow: "0 0 20px rgba(37,211,102,0.4)" }}
-                asChild
-              >
-                <a
-                  href={`https://wa.me/237658508725?text=${encodeURIComponent(whatsappMsg)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <div
+                  className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 border ${variantStock > 5 ? "border-emerald-500/20 text-emerald-400" : variantStock > 0 ? "border-yellow-500/20 text-yellow-400" : "border-red-500/20 text-red-400"}`}
                 >
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Commander sur WhatsApp
-                </a>
-              </Button>
+                  <span
+                    className={`h-1 w-1 rounded-full ${variantStock > 5 ? "bg-emerald-400" : variantStock > 0 ? "bg-yellow-400" : "bg-red-400"}`}
+                  />
+                  {variantStock > 5
+                    ? "In Stock"
+                    : variantStock > 0
+                      ? `Only ${variantStock} Left`
+                      : "Sold Out"}
+                </div>
+              </div>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full border-white/15 bg-white/5 hover:bg-white/10 text-white py-5"
-                onClick={handleShare}
-              >
-                {copied ? (
-                  <Check className="w-4 h-4 mr-2 text-emerald-400" />
-                ) : (
-                  <Share2 className="w-4 h-4 mr-2" />
+              {/* Compact Description */}
+              {product.description && (
+                <p className="text-base text-white/50 leading-relaxed max-w-prose">
+                  {product.description}
+                </p>
+              )}
+
+              {/* Variants Selector - More Compact */}
+              <div className="space-y-6 pt-2">
+                {/* Color */}
+                {colors.length > 0 && (
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">
+                      Color
+                    </p>
+                    <div className="flex flex-wrap gap-2.5">
+                      {colors.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => handleVariantSelect(v)}
+                          className={`group relative h-9 w-9 rounded-xl p-0.5 transition-all duration-300 ${selectedVariant?.colorHex === v.colorHex ? "bg-primary scale-110" : "bg-white/5 hover:bg-white/10"}`}
+                        >
+                          <div
+                            className="w-full h-full rounded-[9px] border border-black/10 shadow-inner"
+                            style={{ backgroundColor: v.colorHex! }}
+                          />
+                          {selectedVariant?.colorHex === v.colorHex && (
+                            <motion.div
+                              layoutId="color-check-refined"
+                              className="absolute -top-1 -right-1 bg-white text-black rounded-full p-0.5 shadow-sm"
+                            >
+                              <Check className="w-2 h-2" />
+                            </motion.div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                {copied ? "Lien copié !" : "Partager ce produit"}
-              </Button>
-            </div>
 
-            {/* Delivery Accordion */}
-            <Accordion
-              type="single"
-              collapsible
-              className="w-full border rounded-xl border-white/10 bg-white/5 px-4"
-            >
-              <AccordionItem value="delivery" className="border-b-white/10">
-                <AccordionTrigger className="hover:text-primary hover:no-underline">
-                  <div className="flex items-center gap-3">
-                    <Truck className="w-4 h-4 text-primary" />
-                    <span className="text-sm">Livraison & Expédition</span>
+                {/* Size */}
+                {sizes.length > 0 && (
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">
+                      Size
+                    </p>
+                    <div className="grid grid-cols-5 md:grid-cols-6 gap-2">
+                      {sizes.map((size) => {
+                        const variant = product.variants.find(
+                          (v) =>
+                            v.size === size &&
+                            (!selectedVariant?.colorHex ||
+                              v.colorHex === selectedVariant.colorHex),
+                        );
+                        const outOfStock = variant?.stock === 0;
+                        const isSelected = selectedVariant?.size === size;
+
+                        return (
+                          <button
+                            key={size}
+                            onClick={() =>
+                              variant &&
+                              !outOfStock &&
+                              setSelectedVariant(variant)
+                            }
+                            disabled={outOfStock}
+                            className={`h-11 rounded-lg border font-black text-xs transition-all duration-300 ${isSelected ? "bg-white text-black border-white shadow-lg" : outOfStock ? "border-white/5 text-white/5 line-through" : "bg-white/5 border-white/5 text-white/60 hover:border-primary hover:text-white"}`}
+                          >
+                            {size}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm space-y-2">
-                  <p>
-                    <strong className="text-white">Yaoundé :</strong> Livraison
-                    en 24h. Paiement à la livraison possible.
-                  </p>
-                  <p>
-                    <strong className="text-white">Autres villes :</strong>{" "}
-                    Expédition via agences de voyage ou DHL sous 48h après
-                    paiement.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="guarantee" className="border-none">
-                <AccordionTrigger className="hover:text-primary hover:no-underline">
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck className="w-4 h-4 text-primary" />
-                    <span className="text-sm">Garantie Qualité</span>
+                )}
+              </div>
+
+              {/* Primary Action */}
+              <div className="flex flex-col gap-3 pt-6 pb-8">
+                <Button
+                  size="lg"
+                  className="w-full h-14 bg-[#25D366] hover:bg-[#128C7E] text-white font-black text-base rounded-xl transition-all duration-300 shadow-xl group"
+                  asChild
+                >
+                  <a
+                    href={`https://wa.me/237658508725?text=${encodeURIComponent(whatsappMsg)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                    CONTACT FRECHNEL SHOPPING
+                  </a>
+                </Button>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    className="h-12 border-white/5 bg-white/2 hover:bg-white/5 text-white font-bold rounded-xl text-xs"
+                    onClick={handleShare}
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 mr-2 text-emerald-400" />
+                    ) : (
+                      <Share2 className="w-4 h-4 mr-2" />
+                    )}
+                    {copied ? "COPIED" : "SHARE LINK"}
+                  </Button>
+
+                  <div className="flex items-center justify-center gap-2 px-4 rounded-xl bg-white/2 border border-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest">
+                    <Truck className="w-3.5 h-3.5 text-primary" />
+                    DHL / NATIONAL
                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm">
-                  Tous nos articles sont vérifiés avant expédition. Satisfait ou
-                  remboursé sous 3 jours en cas de défaut.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                </div>
+              </div>
+
+              {/* Minimal Info */}
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem
+                  value="details"
+                  className="border border-white/5 bg-white/2 rounded-xl px-5"
+                >
+                  <AccordionTrigger className="text-[10px] font-black uppercase tracking-widest py-4 hover:no-underline opacity-60 hover:opacity-100">
+                    Product Specifications
+                  </AccordionTrigger>
+                  <AccordionContent className="text-white/40 text-xs leading-relaxed pb-4">
+                    <ul className="space-y-2 list-disc pl-4">
+                      <li>Premium Cameroon Streetwear collection.</li>
+                      <li>High durability tailored finish.</li>
+                      {product.tags.length > 0 && (
+                        <li className="list-none pt-1 flex flex-wrap gap-1.5">
+                          {product.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="text-[9px] border border-white/10 rounded-full px-2 py-0.5"
+                            >
+                              #{t}
+                            </span>
+                          ))}
+                        </li>
+                      )}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </motion.div>
           </div>
         </div>
 
-        {/* Similar Products */}
+        {/* Similar Section - More Discrete */}
         {similar.length > 0 && (
-          <div className="mt-20">
-            <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-white mb-8">
-              Vous aimerez <span className="text-primary">aussi</span>
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="mt-32 border-t border-white/5 pt-16">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <span className="text-[10px] font-black text-primary tracking-widest uppercase">
+                  Collection
+                </span>
+                <h2 className="text-3xl font-black tracking-tighter text-white mt-1">
+                  MORE TO EXPLORE
+                </h2>
+              </div>
+              <Link
+                href="/shop"
+                className="text-xs font-bold text-white/20 hover:text-white transition-colors border-b border-white/10 pb-0.5"
+              >
+                FULL SHOP
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {similar.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
