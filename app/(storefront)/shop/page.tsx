@@ -319,8 +319,8 @@ function ShopContent() {
   ].filter(Boolean).length;
 
   return (
-    <div className="min-h-screen pt-20 pb-20">
-      <Section className="container px-4 md:px-6">
+    <div className="min-h-screen pt-12 pb-20">
+      <Section className="container px-4 md:px-6 !py-0">
         {/* Page header */}
         <div className="mb-10">
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-2">
