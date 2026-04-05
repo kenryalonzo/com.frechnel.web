@@ -149,13 +149,13 @@ export default function ProductClientPage({ slug }: { slug: string }) {
   const variantStock = selectedVariant?.stock ?? (product.inStock ? 99 : 0);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-4 pb-20 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] pt-4 pb-20 overflow-x-hidden flex flex-col items-center justify-center lg:py-12">
       {/* Dynamic Background Glow */}
       <div className="fixed top-0 left-1/4 w-[500px] h-[400px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none" />
 
-      <Section className="container px-4 md:px-6 relative pt-4 md:pt-6 pb-16 md:pb-24">
-        {/* Breadcrumb - Compact */}
-        <div className="mb-4 opacity-40 hover:opacity-100 transition-opacity">
+      <Section className="container px-4 md:px-6 relative flex flex-col items-center pt-4 md:pt-6 pb-16 md:pb-24 max-w-7xl">
+        {/* Breadcrumb - Balanced */}
+        <div className="w-full max-w-5xl mb-6 opacity-40 hover:opacity-100 transition-opacity">
           <Breadcrumb
             items={[
               { label: "Shop", href: "/shop" },
@@ -168,16 +168,17 @@ export default function ProductClientPage({ slug }: { slug: string }) {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* LEFT: IMAGE SECTION */}
-          <div className="lg:col-span-5 xl:col-span-4">
-            <div className="sticky top-24 space-y-4">
+        {/* THE PRODUCT BOX - Centered Delimiter */}
+        <div className="w-full max-w-5xl bg-[#0d0d0d] border border-white/5 rounded-[40px] overflow-hidden shadow-2xl flex flex-col lg:flex-row relative">
+          {/* LEFT: IMAGE SECTION (Gallery Style) */}
+          <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col items-center justify-center bg-white/1 border-b lg:border-b-0 lg:border-r border-white/5">
+            <div className="w-full max-w-sm space-y-8">
               <motion.div
                 key={activeImage}
-                initial={{ opacity: 0, scale: 0.98 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="relative group lg:max-h-[48vh]"
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="relative group"
               >
                 {/* Image Showcase - Refined Border & Shadow */}
                 <div className="relative aspect-4/5 w-full rounded-xl overflow-hidden border border-white/5 bg-white/2 shadow-2xl transition-all duration-500">
@@ -208,12 +209,12 @@ export default function ProductClientPage({ slug }: { slug: string }) {
                 </div>
               </motion.div>
 
-              {/* Thumbnails - Smaller */}
+              {/* Thumbnails - Centered below */}
               {product.variants.filter((v) => v.imageUrl).length > 0 && (
-                <div className="flex gap-2 px-1 pb-2 overflow-x-auto scrollbar-hide">
+                <div className="flex justify-center flex-wrap gap-2.5">
                   <button
                     onClick={() => setActiveImage(product.imageUrl)}
-                    className={`relative shrink-0 w-14 h-16 rounded-md overflow-hidden border transition-all duration-300 ${activeImage === product.imageUrl ? "border-primary scale-105" : "border-white/10 opacity-40 hover:opacity-80"}`}
+                    className={`relative shrink-0 w-14 h-18 rounded-lg overflow-hidden border transition-all duration-300 ${activeImage === product.imageUrl ? "border-primary scale-110 shadow-lg" : "border-white/10 opacity-40 hover:opacity-100"}`}
                   >
                     <Image
                       src={product.imageUrl}
@@ -228,7 +229,7 @@ export default function ProductClientPage({ slug }: { slug: string }) {
                       <button
                         key={v.id}
                         onClick={() => handleVariantSelect(v)}
-                        className={`relative shrink-0 w-14 h-16 rounded-md overflow-hidden border transition-all duration-300 ${activeImage === v.imageUrl ? "border-primary scale-105" : "border-white/10 opacity-40 hover:opacity-80"}`}
+                        className={`relative shrink-0 w-14 h-18 rounded-lg overflow-hidden border transition-all duration-300 ${activeImage === v.imageUrl ? "border-primary scale-110 shadow-lg" : "border-white/10 opacity-40 hover:opacity-100"}`}
                       >
                         <Image
                           src={v.imageUrl!}
@@ -244,7 +245,7 @@ export default function ProductClientPage({ slug }: { slug: string }) {
           </div>
 
           {/* RIGHT: DETAILS SECTION */}
-          <div className="lg:col-span-7 xl:col-span-8 flex flex-col pt-2">
+          <div className="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
             <motion.div
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -453,10 +454,10 @@ export default function ProductClientPage({ slug }: { slug: string }) {
           </div>
         </div>
 
-        {/* Similar Section - More Discrete */}
+        {/* Similar Section - Discrete */}
         {similar.length > 0 && (
-          <div className="mt-32 border-t border-white/5 pt-16">
-            <div className="flex items-end justify-between mb-8">
+          <div className="w-full max-w-5xl mt-32 border-t border-white/5 pt-16">
+            <div className="flex items-end justify-between mb-8 px-4 lg:px-0">
               <div>
                 <span className="text-[10px] font-black text-primary tracking-widest uppercase">
                   Collection
@@ -472,7 +473,7 @@ export default function ProductClientPage({ slug }: { slug: string }) {
                 FULL SHOP
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-4 lg:px-0">
               {similar.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
