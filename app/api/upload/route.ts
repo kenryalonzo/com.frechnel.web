@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
 import { requireAuth } from "@/lib/auth";
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -39,28 +36,22 @@ export async function POST(request: NextRequest) {
     const mime = (file.type || "").toLowerCase();
     if (!ALLOWED_TYPES.has(mime)) {
       return NextResponse.json(
-        { error: "Type non autorisé (images : JPEG, PNG, WebP, GIF, AVIF, SVG)" },
+        {
+          error: "Type non autorisé (images : JPEG, PNG, WebP, GIF, AVIF, SVG)",
+        },
         { status: 400 },
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Upload vers Cloudinary
+    const { uploadToCloudinary } = await import("@/lib/cloudinary");
+    const uploadResult = await uploadToCloudinary(file);
 
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-
-    const uploadDir = join(process.cwd(), "public", "uploads");
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    const path = join(uploadDir, filename);
-    await writeFile(path, buffer);
-
-    const publicUrl = `/uploads/${filename}`;
-
-    return NextResponse.json({ url: publicUrl, success: true });
+    return NextResponse.json({
+      url: uploadResult.url,
+      publicId: uploadResult.publicId,
+      success: true,
+    });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(

@@ -38,6 +38,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Form state
@@ -83,9 +84,11 @@ export default function ProductsPage() {
     }
   }
 
-  async function fetchCategories() {
+  async function fetchCategories(attempt = 1) {
     try {
+      setCategoriesError(false);
       const res = await fetch("/api/categories");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       // Flatten categories for dropdown
       const flat: Category[] = [];
@@ -97,12 +100,18 @@ export default function ProductsPage() {
       };
       if (Array.isArray(data)) {
         extract(data);
+        setCategories(flat);
       } else {
-        console.warn("Categories API did not return an array:", data);
+        throw new Error("Response is not an array");
       }
-      setCategories(flat);
     } catch (error) {
       console.error("Categories fetch error", error);
+      if (attempt < 3) {
+        setTimeout(() => fetchCategories(attempt + 1), attempt * 800);
+      } else {
+        setCategoriesError(true);
+        toast.error("Impossible de charger les catégories.");
+      }
     }
   }
 
@@ -426,7 +435,7 @@ export default function ProductsPage() {
 
                   <div>
                     <Label className="text-xs">Image Principale *</Label>
-                    <div className="flex gap-3 mt-1 flex-col sm:flex-row">
+                    <div className="flex gap-3 mt-1 items-center">
                       {formData.imageUrl && (
                         <div className="w-16 h-16 rounded overflow-hidden shrink-0 border border-white/10 relative">
                           <Image
@@ -437,48 +446,38 @@ export default function ProductsPage() {
                           />
                         </div>
                       )}
-                      <div className="flex-1 space-y-2">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={async (e) => {
-                            if (!e.target.files?.[0]) return;
-                            const file = e.target.files[0];
-                            const data = new FormData();
-                            data.append("file", file);
-                            toast.loading("Upload...", { id: "uploadProd" });
-                            try {
-                              const res = await fetch("/api/upload", {
-                                method: "POST",
-                                headers: getAdminAuthHeaders(),
-                                body: data,
-                              });
-                              if (!res.ok) throw new Error();
-                              const val = await res.json();
-                              setFormData({ ...formData, imageUrl: val.url });
-                              toast.success("Image uploadée", {
-                                id: "uploadProd",
-                              });
-                            } catch {
-                              toast.error("Erreur", { id: "uploadProd" });
-                            }
-                          }}
-                          className="bg-white/5 border-white/10 h-9 text-sm"
-                        />
-                        <Input
-                          type="text"
-                          value={formData.imageUrl}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              imageUrl: e.target.value,
-                            })
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          if (!e.target.files?.[0]) return;
+                          const file = e.target.files[0];
+                          const data = new FormData();
+                          data.append("file", file);
+                          toast.loading("Upload en cours...", {
+                            id: "uploadProd",
+                          });
+                          try {
+                            const res = await fetch("/api/upload", {
+                              method: "POST",
+                              headers: getAdminAuthHeaders(),
+                              body: data,
+                            });
+                            if (!res.ok) throw new Error();
+                            const val = await res.json();
+                            setFormData({ ...formData, imageUrl: val.url });
+                            toast.success("Image uploadée ✓", {
+                              id: "uploadProd",
+                            });
+                          } catch {
+                            toast.error("Erreur lors de l'upload", {
+                              id: "uploadProd",
+                            });
                           }
-                          className="bg-white/5 border-white/10 h-9 text-sm"
-                          placeholder="Ou lien URL (rempli automatiquement après upload)"
-                          required={!formData.imageUrl}
-                        />
-                      </div>
+                        }}
+                        className="bg-white/5 border-white/10 h-9 text-sm flex-1"
+                        required={!formData.imageUrl}
+                      />
                     </div>
                   </div>
 
@@ -519,23 +518,46 @@ export default function ProductsPage() {
 
                   <div>
                     <Label className="text-xs">Catégorie *</Label>
-                    <Select
-                      value={formData.categoryId}
-                      onValueChange={(v) =>
-                        setFormData({ ...formData, categoryId: v })
-                      }
-                    >
-                      <SelectTrigger className="bg-white/5 border-white/10 mt-1 h-9 text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {categoriesError ? (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-red-400">
+                          Échec du chargement
+                        </span>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs border-primary/30 text-primary"
+                          onClick={() => fetchCategories()}
+                        >
+                          Réessayer
+                        </Button>
+                      </div>
+                    ) : (
+                      <Select
+                        value={formData.categoryId}
+                        onValueChange={(v) =>
+                          setFormData({ ...formData, categoryId: v })
+                        }
+                      >
+                        <SelectTrigger className="bg-white/5 border-white/10 mt-1 h-9 text-sm">
+                          <SelectValue
+                            placeholder={
+                              categories.length === 0
+                                ? "Chargement..."
+                                : "Choisir une catégorie"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </div>
 
                   <div>
@@ -736,53 +758,49 @@ export default function ProductsPage() {
                               className="h-8 text-xs bg-black/40 border-white/10"
                             />
                           </div>
-                          <div className="col-span-2 relative group-variant">
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              onChange={async (e) => {
-                                if (!e.target.files?.[0]) return;
-                                const file = e.target.files[0];
-                                const data = new FormData();
-                                data.append("file", file);
-                                toast.loading("Upload...", {
-                                  id: `uv-${index}`,
-                                });
-                                try {
-                                  const res = await fetch("/api/upload", {
-                                    method: "POST",
-                                    headers: getAdminAuthHeaders(),
-                                    body: data,
+                          <div className="col-span-2 relative">
+                            <div className="flex items-center gap-1">
+                              {variant.imageUrl && (
+                                <div className="w-8 h-8 rounded overflow-hidden shrink-0 border border-white/10 relative">
+                                  <Image
+                                    src={variant.imageUrl}
+                                    alt=""
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              )}
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={async (e) => {
+                                  if (!e.target.files?.[0]) return;
+                                  const file = e.target.files[0];
+                                  const data = new FormData();
+                                  data.append("file", file);
+                                  toast.loading("Upload...", {
+                                    id: `uv-${index}`,
                                   });
-                                  if (!res.ok) throw new Error();
-                                  const val = await res.json();
-                                  updateVariant(index, "imageUrl", val.url);
-                                  toast.success("OK", { id: `uv-${index}` });
-                                } catch {
-                                  toast.error("Err", { id: `uv-${index}` });
-                                }
-                              }}
-                              className="h-8 text-xs bg-black/40 border-white/10 mb-1"
-                              title="Upload image variante"
-                            />
-                            {variant.imageUrl && (
-                              <div className="absolute right-1 top-1 w-6 h-6 rounded overflow-hidden z-10">
-                                <Image
-                                  src={variant.imageUrl}
-                                  alt=""
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            )}
-                            <Input
-                              placeholder="Ou URL https://..."
-                              value={variant.imageUrl || ""}
-                              onChange={(e) =>
-                                updateVariant(index, "imageUrl", e.target.value)
-                              }
-                              className="h-8 text-xs bg-black/40 border-white/10"
-                            />
+                                  try {
+                                    const res = await fetch("/api/upload", {
+                                      method: "POST",
+                                      headers: getAdminAuthHeaders(),
+                                      body: data,
+                                    });
+                                    if (!res.ok) throw new Error();
+                                    const val = await res.json();
+                                    updateVariant(index, "imageUrl", val.url);
+                                    toast.success("OK", { id: `uv-${index}` });
+                                  } catch {
+                                    toast.error("Erreur", {
+                                      id: `uv-${index}`,
+                                    });
+                                  }
+                                }}
+                                className="h-8 text-xs bg-black/40 border-white/10"
+                                title="Upload image variante"
+                              />
+                            </div>
                           </div>
                           <div className="col-span-1 flex justify-end">
                             <Button
