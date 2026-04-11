@@ -18,7 +18,7 @@ interface Category {
 const FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
   "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
-  "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=80",
+  "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80",
   "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80",
 ];
 
