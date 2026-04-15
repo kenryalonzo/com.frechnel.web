@@ -33,7 +33,7 @@ export function Footer() {
                 className="object-contain"
               />
               <span className="text-xl font-black tracking-tighter text-white">
-                FRECHNEL<span className="text-primary">.</span>
+                  FRECHNEL<span className="text-red-600"> SHOPPING</span><span className="text-primary">.</span>
               </span>
             </Link>
             <p className="text-sm leading-relaxed">

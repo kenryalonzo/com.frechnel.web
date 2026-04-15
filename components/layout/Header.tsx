@@ -101,7 +101,7 @@ export function Header() {
                     className="object-contain"
                   />
                   <SheetTitle className="text-2xl font-black tracking-tighter text-white">
-                    FRECHNEL<span className="text-primary">.</span>
+                      FRECHNEL<span className="text-red-600"> SHOPPING</span><span className="text-primary">.</span>
                   </SheetTitle>
                 </div>
 
@@ -164,7 +164,7 @@ export function Header() {
               className="object-contain w-auto h-9"
             />
             <span className="text-xl font-black tracking-tighter text-white">
-              FRECHNEL<span className="text-primary">.</span>
+                FRECHNEL<span className="text-red-600"> SHOPPING</span><span className="text-primary">.</span>
             </span>
           </Link>
         </div>
