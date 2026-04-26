@@ -16,23 +16,23 @@ interface Category {
 }
 
 const DEFAULT_IMAGES: Record<string, string> = {
-  babouche:
-    "https://images.unsplash.com/photo-1601050638914-3860000bd962?w=600&q=80",
+  babouche: "https://plus.unsplash.com/premium_photo-1699555730185-06ae7d1e0b4f?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   tenis: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
-  maillots:
-    "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80",
-  maillot:
-    "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80",
-  robes:
-    "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80",
-  robe: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80",
+  maillots: "https://plus.unsplash.com/premium_photo-1664297943340-e7fcb94726bb?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 };
 
 const FALLBACK_IMAGES = [
-  "https://images.unsplash.com/photo-1601050638914-3860000bd962?w=600&q=80", // Babouche
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80", // Tennis
-  "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80", // Maillots
+  "https://plus.unsplash.com/premium_photo-1699555730185-06ae7d1e0b4f?w=600&q=80", // Babouche
+  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80", // Tenis
+  "https://plus.unsplash.com/premium_photo-1664297943340-e7fcb94726bb?w=600&q=80", // Maillots
   "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80", // Robes
+];
+
+const STATIC_FALLBACK: Category[] = [
+  { id: "babouche", name: "Babouche", slug: "babouche", imageUrl: null },
+  { id: "tenis", name: "Tenis", slug: "tenis", imageUrl: null },
+  { id: "maillots", name: "Maillots", slug: "maillots", imageUrl: null },
+  { id: "robes", name: "Robes", slug: "robes", imageUrl: null },
 ];
 
 export function CategoriesGrid() {
@@ -42,10 +42,15 @@ export function CategoriesGrid() {
     fetch("/api/categories")
       .then((r) => r.json())
       .then((data) => {
-        // Show max 4 root categories
-        setCategories((Array.isArray(data) ? data : []).slice(0, 4));
+        if (Array.isArray(data) && data.length > 0) {
+          setCategories(data.slice(0, 4));
+        } else {
+          setCategories(STATIC_FALLBACK);
+        }
       })
-      .catch(console.error);
+      .catch(() => {
+        setCategories(STATIC_FALLBACK);
+      });
   }, []);
 
   if (categories.length === 0) return null;
@@ -77,7 +82,10 @@ export function CategoriesGrid() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {categories.map((cat, i) => {
-          const categoryKey = cat.name.toLowerCase().trim();
+          let displayName = cat.name.trim();
+          if (displayName.toLowerCase() === "tennis") displayName = "Tenis";
+
+          const categoryKey = displayName.toLowerCase();
           const img =
             cat.imageUrl ||
             DEFAULT_IMAGES[categoryKey] ||
@@ -113,7 +121,7 @@ export function CategoriesGrid() {
                   <h3
                     className={`font-black text-white tracking-tight ${i === 0 ? "text-2xl md:text-3xl" : "text-base md:text-lg"}`}
                   >
-                    {cat.name}
+                    {displayName}
                   </h3>
                   {cat._count && (
                     <p className="text-white/60 text-xs mt-0.5">

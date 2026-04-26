@@ -115,7 +115,7 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Details */}
       <div className="p-4 space-y-2">
         <div className="text-xs text-muted-foreground uppercase tracking-wider">
-          {product.category.name}
+          {product.category.name.trim().toLowerCase() === "tennis" ? "Tenis" : product.category.name}
         </div>
         <h3 className="font-bold text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200">
           {product.name}
