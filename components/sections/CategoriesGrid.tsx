@@ -15,11 +15,24 @@ interface Category {
   children?: Category[];
 }
 
+const DEFAULT_IMAGES: Record<string, string> = {
+  babouche:
+    "https://images.unsplash.com/photo-1601050638914-3860000bd962?w=600&q=80",
+  tenis: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+  maillots:
+    "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80",
+  maillot:
+    "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80",
+  robes:
+    "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80",
+  robe: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80",
+};
+
 const FALLBACK_IMAGES = [
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
-  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
-  "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80",
-  "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80",
+  "https://images.unsplash.com/photo-1601050638914-3860000bd962?w=600&q=80", // Babouche
+  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80", // Tennis
+  "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80", // Maillots
+  "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80", // Robes
 ];
 
 export function CategoriesGrid() {
@@ -64,8 +77,11 @@ export function CategoriesGrid() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {categories.map((cat, i) => {
+          const categoryKey = cat.name.toLowerCase().trim();
           const img =
-            cat.imageUrl || FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
+            cat.imageUrl ||
+            DEFAULT_IMAGES[categoryKey] ||
+            FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
           return (
             <motion.div
               key={cat.id}
