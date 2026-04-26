@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { MapPin, Instagram, Facebook, MessageCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const TikTokIcon = () => (
   <svg
@@ -17,6 +19,28 @@ const TikTokIcon = () => (
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleNewsletter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Inscription réussie !");
+      setEmail("");
+    } catch {
+      toast.error("Erreur lors de l'inscription.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <footer className="w-full border-t border-white/8 bg-[#090909] pt-16 pb-8 text-white/50">
@@ -182,17 +206,21 @@ export function Footer() {
               <p className="text-xs text-white/40 mb-2 uppercase tracking-wider">
                 Newsletter
               </p>
-              <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
+              <form className="flex gap-2" onSubmit={handleNewsletter}>
                 <input
                   type="email"
                   placeholder="ton@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary transition-colors"
                 />
                 <button
                   type="submit"
-                  className="bg-primary hover:bg-primary/90 text-white px-3 py-2 rounded-lg transition-colors glow-red text-sm font-semibold"
+                  disabled={loading}
+                  className="bg-primary hover:bg-primary/90 text-white px-3 py-2 rounded-lg transition-colors glow-red text-sm font-semibold disabled:opacity-50"
                 >
-                  OK
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "OK"}
                 </button>
               </form>
             </div>

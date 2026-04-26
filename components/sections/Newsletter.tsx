@@ -74,7 +74,7 @@ export function Newsletter() {
                   <div className="h-16 w-16 bg-emerald-500/20 rounded-full flex items-center justify-center">
                     <CheckCircle2 className="h-8 w-8 text-emerald-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">C'est fait !</h3>
+                  <h3 className="text-2xl font-bold text-white">C&apos;est fait !</h3>
                   <p className="text-muted-foreground">Vérifie tes mails pour une petite surprise.</p>
                   <Button 
                     variant="link" 
