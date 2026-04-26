@@ -63,10 +63,7 @@ export default function ProductsPage() {
 
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, [fetchProducts, fetchCategories]);
+
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -114,6 +111,11 @@ export default function ProductsPage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, [fetchProducts, fetchCategories]);
 
   function openAddDialog() {
     setEditingProduct(null);
