@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { MouseGlow } from "@/components/ui/mouse-glow";
 import { Toaster } from "@/components/ui/sonner";
+import { FloatingWA } from "@/components/ui/floating-wa";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -72,6 +73,7 @@ export default function RootLayout({
         <MouseGlow />
         <main className="flex-1 relative z-10 flex flex-col">{children}</main>
         <Toaster />
+        <FloatingWA />
       </body>
     </html>
   );

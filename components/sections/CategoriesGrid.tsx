@@ -113,8 +113,9 @@ export function CategoriesGrid() {
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent"></div>
 
-                {/* Hover glow */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/10" />
+                {/* Hover glow / Neon effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-tr from-primary/20 via-transparent to-primary/5 rounded-2xl" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[inset_0_0_40px_rgba(239,68,68,0.2)] rounded-2xl" />
 
                 {/* Label */}
                 <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -129,8 +130,8 @@ export function CategoriesGrid() {
                       {cat._count.products !== 1 ? "s" : ""}
                     </p>
                   )}
-                  <div className="flex items-center gap-1 mt-2 text-primary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    Découvrir <ArrowRight className="h-3 w-3" />
+                  <div className="flex items-center gap-1 mt-2 text-primary text-[10px] font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                    Explorer <ArrowRight className="h-3 w-3" />
                   </div>
                 </div>
               </Link>

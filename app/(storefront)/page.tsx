@@ -7,6 +7,7 @@ import { Trust } from "@/components/sections/Trust";
 import { FAQ } from "@/components/sections/FAQ";
 import { CategoriesGrid } from "@/components/sections/CategoriesGrid";
 import { NewArrivals } from "@/components/sections/NewArrivals";
+import { Newsletter } from "@/components/sections/Newsletter";
 import { Section } from "@/components/ui/section";
 import { ArrowRight, MessageCircle } from "lucide-react";
 
@@ -123,6 +124,9 @@ export default function Home() {
 
       {/* New Arrivals */}
       <NewArrivals />
+
+      {/* Newsletter */}
+      <Newsletter />
 
       {/* Trust + FAQ */}
       <Trust />

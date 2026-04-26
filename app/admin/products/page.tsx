@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -66,9 +66,9 @@ export default function ProductsPage() {
   useEffect(() => {
     fetchProducts();
     fetchCategories();
-  }, []);
+  }, [fetchProducts, fetchCategories]);
 
-  async function fetchProducts() {
+  const fetchProducts = useCallback(async () => {
     try {
       const res = await fetch("/api/products?limit=100"); // Load more for admin
       const data = await res.json();
@@ -82,9 +82,9 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  async function fetchCategories(attempt = 1) {
+  const fetchCategories = useCallback(async (attempt = 1) => {
     try {
       setCategoriesError(false);
       const res = await fetch("/api/categories");
@@ -113,7 +113,7 @@ export default function ProductsPage() {
         toast.error("Impossible de charger les catégories.");
       }
     }
-  }
+  }, []);
 
   function openAddDialog() {
     setEditingProduct(null);

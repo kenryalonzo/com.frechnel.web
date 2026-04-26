@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Section } from "@/components/ui/section";
 import {
   Carousel,
@@ -14,7 +14,39 @@ import { Product } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2, Flame } from "lucide-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef } from "react";
+const STATIC_FALLBACK_BEST_SELLERS: Product[] = [
+  {
+    id: "fs-1",
+    name: "Nike Dunk Low Retro",
+    imageUrl:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+    priceOriginal: 45000,
+    isPromo: false,
+    category: { name: "Tenis" },
+    inStock: true,
+  },
+  {
+    id: "fs-2",
+    name: "Portugal Jersey 2024",
+    imageUrl:
+      "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80",
+    priceOriginal: 15000,
+    pricePromo: 12000,
+    isPromo: true,
+    category: { name: "Maillots" },
+    inStock: true,
+  },
+  {
+    id: "fs-3",
+    name: "Babouche Marron Luxe",
+    imageUrl:
+      "https://plus.unsplash.com/premium_photo-1699555730185-06ae7d1e0b4f?q=80&w=387&auto=format&fit=crop",
+    priceOriginal: 25000,
+    isPromo: false,
+    category: { name: "Babouche" },
+    inStock: true,
+  },
+];
 
 export function BestSellers() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,37 +72,6 @@ export function BestSellers() {
     }
     fetchBestSellers();
   }, []);
-
-const STATIC_FALLBACK_BEST_SELLERS: Product[] = [
-  {
-    id: "fs-1",
-    name: "Nike Dunk Low Retro",
-    imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
-    priceOriginal: 45000,
-    isPromo: false,
-    category: { name: "Tenis" },
-    inStock: true,
-  },
-  {
-    id: "fs-2",
-    name: "Portugal Jersey 2024",
-    imageUrl: "https://images.unsplash.com/photo-1580087442627-628ee17e58b0?w=600&q=80",
-    priceOriginal: 15000,
-    pricePromo: 12000,
-    isPromo: true,
-    category: { name: "Maillots" },
-    inStock: true,
-  },
-  {
-    id: "fs-3",
-    name: "Babouche Marron Luxe",
-    imageUrl: "https://plus.unsplash.com/premium_photo-1699555730185-06ae7d1e0b4f?q=80&w=387&auto=format&fit=crop",
-    priceOriginal: 25000,
-    isPromo: false,
-    category: { name: "Babouche" },
-    inStock: true,
-  },
-];
 
   if (loading) {
     return (

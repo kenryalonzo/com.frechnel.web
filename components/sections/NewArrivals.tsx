@@ -7,6 +7,29 @@ import { ProductCard } from "@/components/shared/ProductCard";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { Product } from "@/lib/types";
 
+const STATIC_FALLBACK_NEW_ARRIVALS: Product[] = [
+  {
+    id: "fs-new-1",
+    name: "Ensemble Sport Tech",
+    imageUrl:
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80",
+    priceOriginal: 35000,
+    isPromo: false,
+    category: { name: "Streetwear" },
+    isNew: true,
+  },
+  {
+    id: "fs-new-2",
+    name: "Lunettes de soleil Futur",
+    imageUrl:
+      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80",
+    priceOriginal: 12000,
+    isPromo: false,
+    category: { name: "Accessoires" },
+    isNew: true,
+  },
+];
+
 export function NewArrivals() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,27 +47,6 @@ export function NewArrivals() {
       .catch(() => setProducts(STATIC_FALLBACK_NEW_ARRIVALS))
       .finally(() => setLoading(false));
   }, []);
-
-const STATIC_FALLBACK_NEW_ARRIVALS: Product[] = [
-  {
-    id: "fs-new-1",
-    name: "Ensemble Sport Tech",
-    imageUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80",
-    priceOriginal: 35000,
-    isPromo: false,
-    category: { name: "Streetwear" },
-    isNew: true,
-  },
-  {
-    id: "fs-new-2",
-    name: "Lunettes de soleil Futur",
-    imageUrl: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80",
-    priceOriginal: 12000,
-    isPromo: false,
-    category: { name: "Accessoires" },
-    isNew: true,
-  },
-];
 
   if (loading) return null;
   if (products.length === 0) return null;
